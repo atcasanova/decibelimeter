@@ -1,0 +1,26 @@
+/var/lib/gems/2.7.0/gems/gm1356-0.0.4/bin/gm1356:40: warning: Using the last argument as keyword parameters is deprecated; maybe ** should be added to the call
+/var/lib/gems/2.7.0/gems/gm1356-0.0.4/lib/gm1356/device.rb:12: warning: The called method `initialize' is defined here
+10:05:00 	 SPL: 47.1dBA
+10:05:01 	 SPL: 51.2dBA
+10:05:02 	 SPL: 39.5dBA
+10:05:03 	 SPL: 40.0dBA
+10:05:05 	 SPL: 40.3dBA
+10:05:05 	 SPL: 41.1dBA
+10:05:06 	 SPL: 39.9dBA
+10:05:07 	 SPL: 39.9dBA
+10:05:08 	 SPL: 41.9dBA
+10:05:09 	 SPL: 39.9dBA
+10:05:10 	 SPL: 53.0dBA
+10:05:11 	 SPL: 41.4dBA
+10:05:12 	 SPL: 41.2dBA
+10:05:13 	 SPL: 42.1dBA
+10:05:14 	 SPL: 40.9dBA
+^CTraceback (most recent call last):
+	6: from /usr/local/bin/gm1356:23:in `<main>'
+	5: from /usr/local/bin/gm1356:23:in `load'
+	4: from /var/lib/gems/2.7.0/gems/gm1356-0.0.4/bin/gm1356:43:in `<top (required)>'
+	3: from /var/lib/gems/2.7.0/gems/gm1356-0.0.4/lib/gm1356/device.rb:25:in `read'
+	2: from /var/lib/gems/2.7.0/gems/gm1356-0.0.4/lib/gm1356/device.rb:25:in `loop'
+	1: from /var/lib/gems/2.7.0/gems/gm1356-0.0.4/lib/gm1356/device.rb:29:in `block in read'
+/var/lib/gems/2.7.0/gems/gm1356-0.0.4/lib/gm1356/device.rb:29:in `sleep': Interrupt
+
