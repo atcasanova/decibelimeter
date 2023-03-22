@@ -3,7 +3,11 @@
 # Configuration
 vendor_id="0x64bd"
 product_id="0x74e3"
-state_request=$(printf "\xb3\x%02x\x%02x\x%02x\x00\x00\x00\x00" $(($RANDOM % 256)) $(($RANDOM % 256)) $(($RANDOM % 256)))
+state_request=$(printf "\xb3%02x%02x%02x\x00\x00\x00\x00" $(($RANDOM % 256)) $(($RANDOM % 256)) $(($RANDOM % 256)))
+# state_request="\xb3$(printf '\\x%x' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))\x00\x00\x00\x00"
+
+
+
 
 # Functions
 function print_usage {
