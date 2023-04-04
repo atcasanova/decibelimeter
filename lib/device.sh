@@ -1,43 +1,84 @@
 #!/bin/bash
-device=/dev/bus/usb/$(lsusb -d 64bd:74e3 | grep -Eo "[0-9]{3}" | head -2| tr '\n' '/' | sed 's/\/$//g')
-STATE_REQUEST="\xb3$(printf '\\x%x' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))\x00\x00\x00"
-declare -f initialize
-declare -f read_current_state
-declare -f read_cap_data
-declare -f send_state_request
 
-exec 6<> $device
+vendor_id=0x64bd
+product_id=0x74e3
 
-function initialize(){
-	read_current_state
+STATE_REQUEST=$(printf '\xb3%.2x%.2x%.2x\00\00\00\00' $((RANDOM % 256)) $((RANDOM % 256)) $((RANDOM % 256)))
+
+hid_device_path="/dev/hidrawN" # Replace N with the appropriate number
+
+# Reads 8 bytes of data from the HID device
+read_cap_data() {
+  local timeout=1000
+  local start_time=$(date +%s%N | cut -b1-13)
+  local elapsed_time=0
+
+  while true; do
+    if read -r -n 8 data < "$hid_device_path"; then
+      echo "$data"
+      break
+    fi
+
+    elapsed_time=$(($(date +%s%N | cut -b1-13) - start_time))
+    if [[ elapsed_time -ge timeout ]]; then
+      break
+    fi
+  done
 }
 
-function read_current_state(){
-	echo entrou na funcao read_current_state
-	data=
-	while (( ${#data} != 8 )); do
-		echo tentando ${#data}: $data >&2
-		send_state_request
-		data=$(read_cap_data)
-		echo $data | xxd -p
-		sleep 0.1
-	done
-	record=$(echo -n "$data" | xxd -p)
+# Sends the state request to the HID device
+send_state_request() {
+  printf '%s' "$STATE_REQUEST" > "$hid_device_path"
 }
 
-function send_state_request(){
-	echo Initializing with $STATE_REQUEST >&2
-	echo -ne "$STATE_REQUEST" >&6 
+# Sets the settings on the device and reads the current state
+set_settings() {
+  local settings_data=$(printf '\x56%s\00\00\00\00\00\00' "$1")
+  printf '%s' "$settings_data" > "$hid_device_path"
+  read_cap_data
+  sleep 0.1
 }
 
-function read_cap_data(){
-	echo chamei read_cap_data >&2
-	cap_data=
-	until [ $cap_data ]; do 
-		echo tentando ler novamente: $cap_data >&2
-		read -t1 cap_data; 
-	done <&6
-	echo $cap_data
+# Reads the current state from the device, processes the data, and calls the provided callback function
+read_current_state() {
+  local callback="$1"
+  local record
+
+  while true; do
+    send_state_request
+    record=$(read_cap_data)
+
+    if [[ ${#record} -eq 8 ]]; then
+      settings=$(get_settings_from_record "$record")
+      $callback "$record"
+      break
+    else
+      sleep 0.1
+    fi
+  done
 }
 
+# Implement the get_settings_from_record and process_record functions according to your needs
+get_settings_from_record() {
+  # Extract settings from the record
+}
 
+process_record() {
+  # Process the record data
+}
+
+# Main loop for reading data from the device
+read_device_data() {
+  local callback="$1"
+
+  while true; do
+    read_current_state "$callback"
+    sleep 0.5 # Adjust the sleep duration based on the desired speed
+  done
+}
+
+# Replace /dev/hidrawN with the correct hidraw device path
+hid_device_path="/dev/hidrawN"
+
+# Example usage: Read data from the device and process it
+read_device_data process_record
