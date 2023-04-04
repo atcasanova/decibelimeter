@@ -11,7 +11,7 @@ initialize_device() {
 
   # Find the corresponding hidraw device
   hid_device_base_path="/sys/bus/usb/devices/${bus}-${device}/hidraw"
-  hidraw_path=$(find "$hid_device_base_path" -name "hidraw*" -type d | head -n 1)
+  hidraw_path=$(find /sys/bus/hid/devices/*$vendor_id:$product_id*/hidraw/ -maxdepth 1 | grep '[0-9]')
 
   if [[ -z "$hidraw_path" ]]; then
     echo "Device not found. Please ensure it's connected."
