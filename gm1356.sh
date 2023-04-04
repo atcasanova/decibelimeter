@@ -1,3 +1,5 @@
+#!/bin/bash
+
 source settings.sh
 source record.sh
 source device.sh
@@ -11,7 +13,8 @@ while true; do
   message=$(read_data_from_device "$device_path")
   initialize_record "$message"
   print_record
-  sleep $(($speed == "fast" ? 0.5 : 1))
+  sleep_time=$(($speed == "fast" ? 1 : 2))
+  sleep $sleep_time
 done
 
 close_device "$device_path"
