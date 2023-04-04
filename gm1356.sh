@@ -36,7 +36,12 @@ while true; do
   data=$(read_current_state)
   assign_spl "$data"
   echo -e "$(date +'%H:%M:%S')\t SPL: ${spl}$(format)"
-  sleep "${settings[speed]}"
+  if [ "${settings[speed]}" == "fast" ]; then
+    sleep_interval=0.5
+  else
+    sleep_interval=1
+  fi
+  sleep $sleep_interval
 done
 
 close_device "$device_path"
