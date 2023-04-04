@@ -3,12 +3,21 @@
 initialize_device() {
   local vendor_id="$1"
   local product_id="$2"
-  hid_device_path=$(find /sys/bus/hid/devices -maxdepth 1 -name "*:${vendor_id}:${product_id}.*" -type d | head -n 1)
-  if [[ -z "$hid_device_path" ]]; then
+  
+  # Find the bus and device number using lsusb
+  usb_device_info=$(lsusb | grep -i "${vendor_id}:${product_id}")
+  bus=$(echo "$usb_device_info" | awk '{print $2}')
+  device=$(echo "$usb_device_info" | awk '{print $4}' | tr -d ':')
+
+  # Find the corresponding hidraw device
+  hid_device_base_path="/sys/bus/usb/devices/${bus}-${device}/hidraw"
+  hidraw_path=$(find "$hid_device_base_path" -name "hidraw*" -type d | head -n 1)
+
+  if [[ -z "$hidraw_path" ]]; then
     echo "Device not found. Please ensure it's connected."
     exit 1
   fi
-  hidraw_path=$(find "$hid_device_path" -name "hidraw*" -type d | head -n 1)
+
   device_path="/dev/$(basename "$hidraw_path")"
   echo "$device_path"
 }
