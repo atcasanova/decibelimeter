@@ -3,7 +3,9 @@
 # Function to assign SPL based on the message received
 assign_spl() {
   local message="$1"
-  spl=$(echo "scale=1; ${message:0:4} / 10" | bc)
+  integer_part="${message:0:3}"
+  decimal_part="${message:3:1}"
+  spl="${integer_part}.${decimal_part}"
 }
 
 # Function to format the record
